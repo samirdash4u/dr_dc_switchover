@@ -51,7 +51,7 @@ OPENSEARCH_PASS='root@123'
 DC_DISK_PATHS=("/" "/tmp" "/var")
 DR_DISK_PATHS=("/" "/tmp" "/var")
 
-DC_JOB_KEYWORDS_FILE=./config/dcnomadjoblist.txt
-DR_JOB_KEYWORDS_FILE=./config/drnomadjoblist.txt
+DC_JOB_KEYWORDS_FILE=../config/dcnomadjoblist.txt
+DR_JOB_KEYWORDS_FILE=../config/drnomadjoblist.txt
 
 MIN_DISK_FREE_PERCENT=20

@@ -1,9 +1,9 @@
 #!/bin/bash
 set -euo pipefail
 
-source ./config/config.sh
-source ./common/logger.sh
-source ./common/utils.sh
+source ../config/config.sh
+source ../common/logger.sh
+source ../common/utils.sh
 
 STATUS=0
 
@@ -14,7 +14,7 @@ fail_check() { log "Error" "FAIL: $1"; STATUS=1; }
 # 1. CONSUL CLUSTER CHECK
 # ---------------------------------------
 check_consul() {
-    log "Checking Consul cluster..."
+    log "Info" "Checking Consul cluster..."
 
     if ! consul members >/tmp/consul_members.out 2>&1; then
 	  fail_check "Consul not reachable"
@@ -109,33 +109,22 @@ check_disk() {
 # ---------------------------------------
 check_nomad_jobs() {
     log "Info" "Checking Nomad jobs from keywords..."
-
     [ -f "$DR_JOB_KEYWORDS_FILE" ] || fail_check "Keyword file missing"
-
-    nomad job status -json > /tmp/nomad_jobs.json
+    nomad job status  > /tmp/nomad_jobs.txt 2>/dev/null
 
     while read -r keyword; do
 	  [ -z "$keyword" ] && continue
-
-	  MATCHED=$(jq -r --arg kw "$keyword" \
-		'.[] | select(.Name | test($kw)) | .Name' \
-		/tmp/nomad_jobs.json)
-
-	  if [ -z "$MATCHED" ]; then
+	  grep -qw "$keyword" /tmp/nomad_jobs.txt
+	  if [ $? -ne 0 ]; then
 		fail_check "No jobs found for keyword: $keyword"
 		continue
 	  fi
-
-	  for job in $MATCHED; do
-		RUNNING=$(nomad job status "$job" | grep -c "running" || true)
-
-		if [ "$RUNNING" -gt 0 ]; then
-		    pass "Job running: $job"
-		else
-		    fail_check "Job NOT running: $job"
-		fi
-	  done
-
+	  RUNNING=$(grep -c "$keyword.*running" /tmp/nomad_jobs.txt)
+	  if [ "$RUNNING" -gt 0 ]; then
+		  pass "Job running: $keyword"
+	  else
+		  fail_check "Job NOT running: $keyword"
+	  fi
     done < "$DR_JOB_KEYWORDS_FILE"
 }
 

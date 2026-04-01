@@ -10,7 +10,7 @@ log() {
     local _level="$1"
     shift
     local _message="$@"
-    echo "$(date +"%F-%H-%M")[${_level}]: ${_message}";
+    echo "$(date +"%F-%H-%M")[${_level}]: ${_message}" | tee -a ${LOG_FILE}
 }
 
 fail() {
