@@ -74,7 +74,7 @@ check_mysql() {
 # ---------------------------------------
 check_opensearch() {
     log "Info" "Checking OpenSearch..."
-    RESPONSE=$(curl -sk -u $OPENSEARCH_USER:$OPENSEARCH_PASS "$DR_OPENSEARCH_URL/_cluster/health")
+    RESPONSE=$(curl -sk -u $OPENSEARCH_USER:$OPENSEARCH_PASS "$DC_OPENSEARCH_URL/_cluster/health")
     STATUS_OS=$(echo "$RESPONSE" | jq -r '.status')
 
     if [[ "$STATUS_OS" == "green" || "$STATUS_OS" == "yellow" ]]; then
@@ -110,7 +110,7 @@ check_disk() {
 check_nomad_jobs() {
     log "Info" "Checking Nomad jobs from keywords..."
 
-    [ -f "$JOB_KEYWORDS_FILE" ] || fail_check "Keyword file missing"
+    [ -f "$DC_JOB_KEYWORDS_FILE" ] || fail_check "Keyword file missing"
 
     nomad job status -json > /tmp/nomad_jobs.json
 
@@ -136,7 +136,7 @@ check_nomad_jobs() {
 		fi
 	  done
 
-    done < "$JOB_KEYWORDS_FILE"
+    done < "$DC_JOB_KEYWORDS_FILE"
 }
 
 # ---------------------------------------

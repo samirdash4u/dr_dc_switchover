@@ -3,7 +3,7 @@
 # In case of switching from DC to DR keep the values unchanged
 # While switching from DR to DC interchange the values for DC_DB_HOST and DR_DB_HOST
 ## For DC to DR  [ Leave this block commented in case of DR to DC Switch ] 
-DC_DB_HOST=10.188.40.182
+DC_DB_HOST=192.168.14.180
 DR_DB_HOST=10.177.72.182
 
 ## For DC to DR  [ Leave this block commented in case of DC to DR Switch ] 
@@ -43,7 +43,7 @@ RESTORE_DIR_DR="/tmp/DC_DUMPS_LATEST"
 BACKUP_DIR_DR="/tmp/Before_Activity_dump"
 
 
-DC_OPENSEARCH_URL=https://127.0.0.1:9211
+DC_OPENSEARCH_URL=https://192.168.14.182:9210
 DR_OPENSEARCH_URL=https://127.0.0.1:9211
 OPENSEARCH_USER=healadmin
 OPENSEARCH_PASS='root@123'

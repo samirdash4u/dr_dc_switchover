@@ -62,7 +62,7 @@ check_mysql() {
     export MYSQL_PWD
     log "Info" "Checking MySQL connectivity..."
 
-    if mysql -h $DC_DB_HOST -P $DB_PORT -u $DB_USER -e "SELECT 1;" >/dev/null 2>&1; then
+    if mysql -h $DR_DB_HOST -P $DB_PORT -u $DB_USER -e "SELECT 1;" >/dev/null 2>&1; then
 	  pass "MySQL is reachable"
     else
 	  fail_check "MySQL connection failed"
@@ -110,7 +110,7 @@ check_disk() {
 check_nomad_jobs() {
     log "Info" "Checking Nomad jobs from keywords..."
 
-    [ -f "$JOB_KEYWORDS_FILE" ] || fail_check "Keyword file missing"
+    [ -f "$DR_JOB_KEYWORDS_FILE" ] || fail_check "Keyword file missing"
 
     nomad job status -json > /tmp/nomad_jobs.json
 
@@ -136,7 +136,7 @@ check_nomad_jobs() {
 		fi
 	  done
 
-    done < "$JOB_KEYWORDS_FILE"
+    done < "$DR_JOB_KEYWORDS_FILE"
 }
 
 # ---------------------------------------
