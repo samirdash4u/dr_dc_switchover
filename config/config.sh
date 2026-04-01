@@ -41,3 +41,17 @@ RESTORE_DIR_DR="/tmp/DC_DUMPS_LATEST"
 
 ## Configure backup dir where mysql dump from dr will be taken and stored before restoring dump from DC
 BACKUP_DIR_DR="/tmp/Before_Activity_dump"
+
+
+DC_OPENSEARCH_URL=https://127.0.0.1:9211
+DR_OPENSEARCH_URL=https://127.0.0.1:9211
+OPENSEARCH_USER=healadmin
+OPENSEARCH_PASS='root@123'
+
+DC_DISK_PATHS=("/" "/tmp" "/var")
+DR_DISK_PATHS=("/" "/tmp" "/var")
+
+DC_JOB_KEYWORDS_FILE=./config/dcnomadjoblist.txt
+DR_JOB_KEYWORDS_FILE=./config/drnomadjoblist.txt
+
+MIN_DISK_FREE_PERCENT=20

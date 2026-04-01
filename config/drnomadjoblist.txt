@@ -1,0 +1,9 @@
+haproxy
+otel
+connector
+heal
+opensearch
+percona
+keycloak
+DATA_RECEIVER
+
