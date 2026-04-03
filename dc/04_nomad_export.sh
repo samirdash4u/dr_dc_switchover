@@ -1,14 +1,22 @@
 #!/bin/bash
-set -e
-source ../common/logger.sh
 
-OUT_DIR=$WORK_DIR/nomad/jobs
+_baseDir=$(dirname(readlink -f $0))
+_commonDir="${_baseDir}../common"
+_confDir="${_baseDir}../config"
+source ${_confDir}/config.sh
+source ${_confDir}/logger.sh
+source ${_confDir}/utils.sh
+_a1homePath=$(consul kv get service/upgrade/installationpath)
+_nomadJobPath="$(_a1homePath)/nomadFile"
+
+OUT_DIR=${BACKUP_DIR_DC}/nomad
 mkdir -p "$OUT_DIR"
 
-log "Info" "Fetching job list"
-nomad job status -json | jq -r '.[].ID' > $WORK_DIR/metadata/nomad_list.txt
+if [ -d "${_nomadJobPath}" ]; then
+    pass "Nomad jobs directory found taking nomad version backup"
+else
+    fail_check "Nomad jobs directory not found"
+    return 1
+fi
 
-while read job; do
-  log "Info" "Exporting job: $job"
-  nomad job inspect -json "$job" > "$OUT_DIR/$job.json"
-done < $WORK_DIR/metadata/nomad_list.txt
+grep -i image ${_nomadJobPath}/*.nomad | awk -F'=' '{print $2}' | tr -d ' "' | sort -u > $OUT_DIR/dockerimagelistdc.txt

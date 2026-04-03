@@ -1,9 +1,12 @@
 #!/bin/bash
 set -euo pipefail
 
-_baseDir=$(dirname(readlink -f $0))
-_confDir="${_baseDir}/config"
+baseDir=$(dirname(readlink -f $0))
+_commonDir="${_baseDir}../common"
+_confDir="${_baseDir}../config"
 source ${_confDir}/config.sh
+source ${_confDir}/logger.sh
+source ${_confDir}/utils.sh
 
 if [ $? -ne 0 ]; then
     echo "ERROR: Failed to read config file ${_confDir}/config.sh. Exiting"
@@ -11,15 +14,7 @@ fi
 
 mkdir -p $BACKUP_DIR_DR
 rm -rf $BACKUP_DIR_DR/*.sql
-
 mkdir -p $RESTORE_DIR_DR
-
-log() {
-    local _level="$1"
-    shift
-    local _message="$@"
-    echo "$(date +"%F-%H-%M")[${_level}]: ${_message}";
-}
 
 MYSQL_PWD=$(echo $DB_PASS| base64 -d)
 export MYSQL_PWD

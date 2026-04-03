@@ -17,3 +17,12 @@ fail() {
   log "ERROR" "$1"
   exit 1
 }
+
+pass(){ 
+    log "Info" "PASS: $1";
+}
+
+fail_check() {
+    log "Error" "FAIL: $1"; STATUS=1;
+}
+

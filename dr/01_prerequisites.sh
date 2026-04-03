@@ -6,9 +6,7 @@ source ../common/logger.sh
 source ../common/utils.sh
 
 STATUS=0
-
-pass() { log "Info" "PASS: $1"; }
-fail_check() { log "Error" "FAIL: $1"; STATUS=1; }
+export NOMAD_CLI_SHOW_HINTS=false
 
 # ---------------------------------------
 # 1. CONSUL CLUSTER CHECK

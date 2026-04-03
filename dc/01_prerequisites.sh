@@ -1,14 +1,15 @@
 #!/bin/bash
 set -euo pipefail
 
-source ../config/config.sh
-source ../common/logger.sh
-source ../common/utils.sh
+_baseDir=$(dirname(readlink -f $0))
+_commonDir="${_baseDir}../common"
+_confDir="${_baseDir}../config"
+source ${_confDir}/config.sh
+source ${_confDir}/logger.sh
+source ${_confDir}/utils.sh
 
 STATUS=0
-
-pass() { log "Info" "PASS: $1"; }
-fail_check() { log "Error" "FAIL: $1"; STATUS=1; }
+export NOMAD_CLI_SHOW_HINTS=false
 
 # ---------------------------------------
 # 1. CONSUL CLUSTER CHECK
