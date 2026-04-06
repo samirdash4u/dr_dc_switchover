@@ -1,9 +1,11 @@
 #!/bin/bash
 set -euo pipefail
 
-source ../config/config.sh
-source ../common/logger.sh
-source ../common/utils.sh
+_baseDir=$(dirname $(readlink -f $0))
+_commonDir="${_baseDir}../common"
+_confDir="${_baseDir}../config"
+source ${_confDir}/*
+source ${_commonDir}/*
 
 STATUS=0
 export NOMAD_CLI_SHOW_HINTS=false

@@ -1,13 +1,11 @@
 #!/bin/bash
 set -euo pipefail
 
-baseDir=$(dirname(readlink -f $0))
+_baseDir=$(dirname $(readlink -f $0))
 _commonDir="${_baseDir}../common"
 _confDir="${_baseDir}../config"
-source ${_confDir}/config.sh
-source ${_confDir}/logger.sh
-source ${_confDir}/utils.sh
-source ${_confDir}/workerentry.sh
+source ${_confDir}/*
+source ${_commonDir}/*
 
 if [ $? -ne 0 ]; then
     echo "ERROR: Failed to read config file ${_confDir}/config.sh. Exiting"
@@ -89,6 +87,6 @@ log "Info" "Updating connector table entires completed"
 
 log "Info" "Updating worker parameter entires"
 
-update_kpi_endpoint_all_dbs()
+update_kpi_endpoint_all_dbs
 
-log "All DB updates completed"
+log "Info" "All DB updates completed"

@@ -1,11 +1,11 @@
 #!/bin/bash
-set -e
-_baseDir=$(dirname(readlink -f $0))
+set -euo pipefail
+
+_baseDir=$(dirname $(readlink -f $0))
 _commonDir="${_baseDir}../common"
 _confDir="${_baseDir}../config"
-source ${_confDir}/config.sh
-source ${_confDir}/logger.sh
-source ${_confDir}/utils.sh
+source ${_confDir}/*
+source ${_commonDir}/*
 
 OUT_DIR=${BACKUP_DIR_DC}/consul
 mkdir -p "$OUT_DIR"
