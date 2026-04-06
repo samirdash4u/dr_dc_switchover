@@ -1,3 +1,55 @@
-Configure the required parameters in config/config.sh
-Run the databasebackup.sh to take backup on DC
-Run the databaserestore.sh to restore on DR
+## Folder structure
+.
+├── common
+│   ├── importcert.sh
+│   ├── logger.sh
+│   └── utils.sh
+├── config
+│   ├── certs.sh
+│   ├── config.sh
+│   ├── dcnomadjoblist.txt
+│   ├── drnomadjoblist.txt
+│   └── workerentry.sh
+├── dc
+│   ├── 01_prerequisites.sh
+│   ├── 02_db_dump.sh
+│   ├── 03_consul_export.sh
+│   ├── 04_nomad_export.sh
+│   └── 05_package_artifacts.sh
+├── dr
+│   ├── 01_prerequisites.sh
+│   ├── 02_unpack.sh
+│   ├── 03_db_restore.sh
+│   ├── 04_update_entry.sh
+│   ├── 05_consul_match.sh
+│   └── 06_nomad_match.sh
+└── README.md
+
+## Configuration [ Must be same for for both dc and dr env. Configure on dc and copy on dr ]
+1. certs.sh
+   Configure as show below
+   NAME|CONF_PATH|ENDPOINT|ALIAS
+   Configure Overwrite = true if you wish to remove older alias and import again
+   Configure Overwrite = false to skip existing alias
+
+2. config.sh
+   Configure database parameters, names of database to take back and backup/restore paths on host
+
+3. dcnomadjoblist.txt
+   List of nomad jobs expected to be running on dc env
+
+4. drnomadjoblist.txt
+   List of nomad jobs expected to be running on dr env
+
+5. workerentry.sh
+   Provide the list of databases where data receiver end point in worker parameters table will be updated
+   Also provide the endpoint as IP:PORT 
+   If same endpoint has to be updated in all tables then configure DEFAULT_END_POINT
+   else configure DB wise endpoints 
+## Execution prerequisities [ Run prerequisites on bothe dc and dr env to check readiness ]
+   Configure the above parameters and run the  dc/01_prerequisites.sh on dc env and dr/01_prerequisites.sh on dr env.
+
+## Execution [ First on dc and then on dr ]
+   Execute the scripts for dc env in the numerical error
+   Once execution is over there will be a tar file containing all the db dumps
+   Copy the tar file in the dr env and run the scripts from dr folder in numerical order
