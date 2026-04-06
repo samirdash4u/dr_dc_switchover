@@ -1,3 +1,87 @@
+# DC–DR Switchover Automation
+
+This repository automates the **Data Center (DC) → Disaster Recovery (DR)** switchover process for Appsone/HEAL platform.
+The automation replaces manual SOP steps with **repeatable, idempotent, and safe scripts**.
+
+## 🔷 Key Features
+
+* ✅ Fully automated **DB, Consul, Nomad sync**
+* ✅ Artifact-based execution (supports **isolated DC & DR environments**)
+* ✅ Config-driven (no hardcoding)
+* ✅ Idempotent operations (safe re-run)
+* ✅ Pre-check validation (infra + services)
+* ✅ Certificate management automation
+* ✅ Endpoint update automation for connector DBs
+
+
+## 🔷 Architecture Overview
+Since DC and DR environments are **not directly connected**, this solution uses:
+DC → Generate Artifacts → Transfer → DR → Apply
+
+### Artifact Bundle Includes:
+* DB dumps
+* Consul KV export
+* Nomad job definitions
+
+## 🔷 Execution Flow
+### 🔹 Step 1: Run in DC
+
+This will:
+* Dump all DBs
+* Export Consul KV
+* Export Nomad job image versions
+* Create bundle
+
+Output:
+switchover_bundle_<timestamp>.tar.gz
+
+### 🔹 Step 2: Transfer Bundle
+Move bundle to DR environment (manual/secure transfer).
+
+### 🔹 Step 3: Run in DR
+This will:
+* Restore DBs
+* Provide a detail of missing Consul Keys
+* List nomad job image version mismatch
+
+
+## 🔷 Pre-check Validation
+Run:
+
+./prerequisites.sh
+
+Checks:
+
+* Consul cluster health
+* Nomad cluster health
+* MySQL connectivity
+* OpenSearch health
+* Disk space
+* Required Nomad jobs running
+
+## 🔷 Certificate Automation
+./scripts/import_certs.sh
+
+Features:
+
+* Fetch certs via openssl
+* Import into keystore
+* Skip existing aliases
+* Overwrite mode supported
+
+## 🔷 Connector Endpoint Update
+Features:
+
+* Updates all connector DBs
+* Supports per-DB override
+* Preserves protocol & path
+* Idempotent
+
+## 🔷 Known Constraints
+* No direct DC ↔ DR connectivity
+* Requires manual bundle transfer
+* DNS switch is external/manual
+
 ## Folder structure
 .
 ├── common
@@ -25,7 +109,7 @@
 │   └── 06_nomad_match.sh
 └── README.md
 
-## Configuration [ Must be same for for both dc and dr env. Configure on dc and copy on dr ]
+## 🔷 Configuration [ Must be same for for both dc and dr env. Configure on dc and copy on dr ]
 1. certs.sh
    Configure as show below
    NAME|CONF_PATH|ENDPOINT|ALIAS
@@ -53,3 +137,6 @@
    Execute the scripts for dc env in the numerical error
    Once execution is over there will be a tar file containing all the db dumps
    Copy the tar file in the dr env and run the scripts from dr folder in numerical order
+
+## 🔷 Author
+Samir Dash
