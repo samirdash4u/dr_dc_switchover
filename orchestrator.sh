@@ -5,14 +5,14 @@ set -euo pipefail
 # Defaults
 # -------------------------------
 MODE=""
-DRY_RUN=true
+DRY_RUN=false
 BUNDLE=""
 
 _baseDir=$(dirname $(readlink -f $0))
 _commonDir="${_baseDir}/common"
 _confDir="${_baseDir}/config"
-source ${_confDir}/*
-source ${_commonDir}/*
+source ${_confDir}/*.sh
+source ${_commonDir}/*.sh
 
 fail() {
   log "Error" "$*"
@@ -104,7 +104,6 @@ run_dc() {
 
   run_step "Pre-check validation" \
     "$_baseDir/dc/01_prerequisites.sh"
-
   run_step "DB dump" \
     "$_baseDir/dc/02_db_dump.sh"
 

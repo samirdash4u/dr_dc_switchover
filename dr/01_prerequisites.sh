@@ -2,10 +2,17 @@
 set -euo pipefail
 
 _baseDir=$(dirname $(readlink -f $0))
-_commonDir="${_baseDir}../common"
-_confDir="${_baseDir}../config"
-source ${_confDir}/*
-source ${_commonDir}/*
+_commonDir="${_baseDir}/../common"
+_confDir="${_baseDir}/../config"
+
+for file in $(find ${_confDir} -type f -name "*.sh"); do
+    source "$file"
+done
+for file in $(find ${_commonDir} -type f -name "*.sh"); do
+    source "$file"
+done
+
+DR_JOB_KEYWORDS_FILE=${_confDir}/${DR_JOB_KEYWORDS_FILE}
 
 STATUS=0
 export NOMAD_CLI_SHOW_HINTS=false
@@ -90,7 +97,7 @@ check_opensearch() {
 check_disk() {
     log "Info" "Checking disk space..."
 
-    for path in "${DISK_PATHS[@]}"; do
+    for path in "${DR_DISK_PATHS[@]}"; do
 	  USAGE=$(df -P "$path" | awk 'NR==2 {print $5}' | tr -d '%')
 	  FREE=$((100 - USAGE))
 
@@ -107,27 +114,32 @@ check_disk() {
 # ---------------------------------------
 # 6. NOMAD JOB VALIDATION (KEYWORDS)
 # ---------------------------------------
+
 check_nomad_jobs() {
     log "Info" "Checking Nomad jobs from keywords..."
+
     [ -f "$DR_JOB_KEYWORDS_FILE" ] || fail_check "Keyword file missing"
-    nomad job status  > /tmp/nomad_jobs.txt 2>/dev/null
+
+    nomad job status > /tmp/nomad_jobs.txt 2>/dev/null
 
     while read -r keyword; do
-	  [ -z "$keyword" ] && continue
-	  grep -qw "$keyword" /tmp/nomad_jobs.txt
-	  if [ $? -ne 0 ]; then
-		fail_check "No jobs found for keyword: $keyword"
-		continue
-	  fi
-	  RUNNING=$(grep -c "$keyword.*running" /tmp/nomad_jobs.txt)
-	  if [ "$RUNNING" -gt 0 ]; then
-		  pass "Job running: $keyword"
-	  else
-		  fail_check "Job NOT running: $keyword"
-	  fi
+        [ -z "$keyword" ] && continue
+
+        if ! grep -qw "$keyword" /tmp/nomad_jobs.txt; then
+            fail_check "No jobs found for keyword: $keyword"
+            continue
+        fi
+
+        RUNNING=$(grep -c "$keyword.*running" /tmp/nomad_jobs.txt || true)
+
+        if [ "$RUNNING" -gt 0 ]; then
+            pass "Job running: $keyword"
+        else
+            fail_check "Job NOT running: $keyword"
+        fi
+
     done < "$DR_JOB_KEYWORDS_FILE"
 }
-
 # ---------------------------------------
 # EXECUTION
 # ---------------------------------------

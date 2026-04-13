@@ -4,7 +4,7 @@
 # While switching from DR to DC interchange the values for DC_DB_HOST and DR_DB_HOST
 ## For DC to DR  [ Leave this block commented in case of DR to DC Switch ] 
 DC_DB_HOST=192.168.14.180
-DR_DB_HOST=10.177.72.182
+DR_DB_HOST=192.168.14.181
 
 ## For DC to DR  [ Leave this block commented in case of DC to DR Switch ] 
 #DC_DB_HOST=10.188.40.182
@@ -44,14 +44,14 @@ BACKUP_DIR_DR="/tmp/Before_Activity_dump"
 
 
 DC_OPENSEARCH_URL=https://192.168.14.182:9210
-DR_OPENSEARCH_URL=https://127.0.0.1:9211
+DR_OPENSEARCH_URL=https://192.168.14.181:9211
 OPENSEARCH_USER=healadmin
 OPENSEARCH_PASS='root@123'
 
 DC_DISK_PATHS=("/" "/tmp" "/var")
 DR_DISK_PATHS=("/" "/tmp" "/var")
 
-DC_JOB_KEYWORDS_FILE=../config/dcnomadjoblist.txt
-DR_JOB_KEYWORDS_FILE=../config/drnomadjoblist.txt
+DC_JOB_KEYWORDS_FILE=dcnomadjoblist.txt
+DR_JOB_KEYWORDS_FILE=drnomadjoblist.txt
 
 MIN_DISK_FREE_PERCENT=20

@@ -2,10 +2,15 @@
 set -euo pipefail
 
 _baseDir=$(dirname $(readlink -f $0))
-_commonDir="${_baseDir}../common"
-_confDir="${_baseDir}../config"
-source ${_confDir}/*
-source ${_commonDir}/*
+_commonDir="${_baseDir}/../common"
+_confDir="${_baseDir}/../config"
+
+for file in $(find ${_confDir} -type f -name "*.sh"); do
+    source "$file"
+done
+for file in $(find ${_commonDir} -type f -name "*.sh"); do
+    source "$file"
+done
 
 if [ $? -ne 0 ]; then
     echo "ERROR: Failed to read config file config.sh. Exiting"
@@ -22,7 +27,8 @@ restore_db() {
     db=$1
     log "Info" "Restoring $db to DR"
     if [ -f "$RESTORE_DIR_DR/${db}.sql" ]; then
-	  mysql -h $DR_DB_HOST -P $DB_PORT -u $DB_USER  $db < $RESTORE_DIR_DR/${db}.sql
+	  #mysql -h $DR_DB_HOST -P $DB_PORT -u $DB_USER  $db < $RESTORE_DIR_DR/${db}.sql
+	  echo "mysql -h $DR_DB_HOST -P $DB_PORT -u $DB_USER  $db < $RESTORE_DIR_DR/${db}.sql"
     else
 	  log "Error" "Mysql dump file for ${db} not found in $RESTORE_DIR_DR folder"
     fi

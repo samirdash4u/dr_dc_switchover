@@ -2,10 +2,15 @@
 set -euo pipefail
 
 _baseDir=$(dirname $(readlink -f $0))
-_commonDir="${_baseDir}../common"
-_confDir="${_baseDir}../config"
-source ${_confDir}/*
-source ${_commonDir}/*
+_commonDir="${_baseDir}/../common"
+_confDir="${_baseDir}/../config"
+
+for file in $(find ${_confDir} -type f -name "*.sh"); do
+    source "$file"
+done
+for file in $(find ${_commonDir} -type f -name "*.sh"); do
+    source "$file"
+done
 
 if [ $? -ne 0 ]; then
     echo "ERROR: Failed to read config file ${_confDir}/config.sh. Exiting"
@@ -21,16 +26,14 @@ export MYSQL_PWD
 update_entry() {
     db=$1
     log "Info" "Updating mysql entry in $db "
-    mysql -h $DR_DB_HOST -P $DB_PORT -u $DB_USER  $db -e "update adapter_chain_repository set connection_url ='jdbc:mysql://${DR_DB_HOST}:${DB_PORT}/${db}?useUnicode=yes&characterEncoding=UTF-8&useSSL=false' where id in (1,2,3,4); update adapter_chain_repository set connection_url ='jdbc:mysql://${DR_DB_HOST}:${DB_PORT}/appsone?useUnicode=yes&characterEncoding=UTF-8&useSSL=false' where id=5;"
+    #mysql -h $DR_DB_HOST -P $DB_PORT -u $DB_USER  $db -e "update adapter_chain_repository set connection_url ='jdbc:mysql://${DR_DB_HOST}:${DB_PORT}/${db}?useUnicode=yes&characterEncoding=UTF-8&useSSL=false' where id in (1,2,3,4); update adapter_chain_repository set connection_url ='jdbc:mysql://${DR_DB_HOST}:${DB_PORT}/appsone?useUnicode=yes&characterEncoding=UTF-8&useSSL=false' where id=5;"
+    echo mysql -h $DR_DB_HOST -P $DB_PORT -u $DB_USER  $db -e "update adapter_chain_repository set connection_url ='jdbc:mysql://${DR_DB_HOST}:${DB_PORT}/${db}?useUnicode=yes&characterEncoding=UTF-8&useSSL=false' where id in (1,2,3,4); update adapter_chain_repository set connection_url ='jdbc:mysql://${DR_DB_HOST}:${DB_PORT}/appsone?useUnicode=yes&characterEncoding=UTF-8&useSSL=false' where id=5;"
     if [ $? -ne 0 ]; then
 	  log "Error" "Failed to update entries for database ${db}. Please check manually"
     fi
 }
 
 update_kpi_endpoint_all_dbs() {
-  source ./config/env.sh
-  source ./common/logger.sh
-
   for DB_NAME in "${CONNECTOR_DBS[@]}"; do
 
     # Pick endpoint (override > default)
@@ -71,7 +74,8 @@ update_kpi_endpoint_all_dbs() {
 	  log "Info" "Updating DB=$DB_NAME id=$id"
 	  log "Info" "OLD: $value -> NEW: $new_value"
 
-        mysql -h $DR_DB_HOST -P $DB_PORT -u $DB_USER -e "UPDATE ${DB_NAME}.worker_parameters SET value='${new_value}' WHERE id=$id;"
+        #mysql -h $DR_DB_HOST -P $DB_PORT -u $DB_USER -e "UPDATE ${DB_NAME}.worker_parameters SET value='${new_value}' WHERE id=$id;"
+        echo mysql -h $DR_DB_HOST -P $DB_PORT -u $DB_USER -e "UPDATE ${DB_NAME}.worker_parameters SET value='${new_value}' WHERE id=$id;"
     done
   done
   log "Info" "All worker paramater DB updates completed"

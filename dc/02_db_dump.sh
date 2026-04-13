@@ -2,10 +2,14 @@
 set -euo pipefail
 
 _baseDir=$(dirname $(readlink -f $0))
-_commonDir="${_baseDir}../common"
-_confDir="${_baseDir}../config"
-source ${_confDir}/*
-source ${_commonDir}/*
+_commonDir="${_baseDir}/../common"
+_confDir="${_baseDir}/../config"
+for file in $(find ${_confDir} -type f -name "*.sh"); do
+    source "$file"
+done
+for file in $(find ${_commonDir} -type f -name "*.sh"); do
+    source "$file"
+done
 
 if [ $? -ne 0 ]; then
     echo "ERROR: Failed to read config file config.sh. Exiting"
@@ -19,7 +23,8 @@ export MYSQL_PWD
 dump_db() {
     db=$1
     log "Info" "Taking dump $db from $DC_DB_HOST"
-    mysqldump -h $DC_DB_HOST -P $DB_PORT -u $DB_USER --master-data --routines --triggers $db  > $BACKUP_DIR_DC/$TIMESTAMP/${db}.sql
+    #mysqldump -h $DC_DB_HOST -P $DB_PORT -u $DB_USER --master-data --routines --triggers $db  > $BACKUP_DIR_DC/$TIMESTAMP/${db}.sql
+    echo "mysqldump -h $DC_DB_HOST -P $DB_PORT -u $DB_USER --master-data --routines --triggers $db  > $BACKUP_DIR_DC/$TIMESTAMP/${db}.sql"
 }
 
 export -f dump_db log
